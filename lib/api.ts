@@ -1,15 +1,20 @@
-const BASE_URL = "https://budget-management-backend-production.up.railway.app";
+// 🔥 Pulls the URL from Vercel's Environment Variables, falling back to your live Railway server
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://budget-management-backend-production.up.railway.app";
 
 export async function apiFetch(
   endpoint: string,
   options: RequestInit = {}
 ) {
+  // Retrieve token safely on the client side
   const token =
     typeof window !== "undefined"
       ? localStorage.getItem("token")
       : null;
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  // Ensure seamless URL construction without double-slashes
+  const formattedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+
+  const response = await fetch(`${BASE_URL}${formattedEndpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +23,7 @@ export async function apiFetch(
     },
   });
 
-  // 🔥 Handle 204 immediately
+  // 🔥 Handle 204 No Content immediately
   if (response.status === 204) {
     return null;
   }
@@ -28,16 +33,23 @@ export async function apiFetch(
     let errorMessage = "Something went wrong";
 
     try {
+      // First try to parse as JSON (e.g., standard Spring Boot error responses)
       const errorData = await response.json();
       if (errorData?.message) {
         errorMessage = errorData.message;
       }
-    } catch {}
+    } catch {
+      // Fallback: If Spring Boot returns a plain text error instead of JSON
+      try {
+        const errorText = await response.text();
+        if (errorText) errorMessage = errorText;
+      } catch {}
+    }
 
     throw new Error(errorMessage);
   }
 
-  // 🔥 Safe JSON parsing (handles empty body)
+  // 🔥 Safe JSON parsing (handles empty response bodies)
   const text = await response.text();
   return text ? JSON.parse(text) : null;
 }
