@@ -40,7 +40,7 @@ export default function ExpensesPage() {
   // ================================
   async function loadExpenses() {
     try {
-      const data = await apiFetch("/expenses?page=0&size=20");
+      const data = await apiFetch("/api/expenses?page=0&size=20");
       setExpenses(data.content || data);
     } catch (error) {
       console.error(error);
@@ -52,7 +52,7 @@ export default function ExpensesPage() {
   // ================================
   async function loadCategories() {
     try {
-      const data = await apiFetch("/categories");
+      const data = await apiFetch("/api/categories");
       
       // We filter the backend data to ONLY keep the 4 allowed options
       const filteredCategories = data.filter((cat: Category) => 
@@ -97,7 +97,7 @@ export default function ExpensesPage() {
 
     try {
       // Sending categoryId exactly like your original backend expects!
-      await apiFetch("/expenses", {
+      await apiFetch("/api/expenses", {
         method: "POST",
         body: JSON.stringify({
           description,
@@ -125,7 +125,7 @@ export default function ExpensesPage() {
     if (deleteId === null) return;
 
     try {
-      await apiFetch(`/expenses/${deleteId}`, {
+      await apiFetch(`/api/expenses/${deleteId}`, {
         method: "DELETE",
       });
 
