@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "https://budget-management-backend-production.up.railway.app";
 
 export async function apiFetch(
   endpoint: string,
