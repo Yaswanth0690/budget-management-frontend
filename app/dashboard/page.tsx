@@ -67,10 +67,10 @@ export default function DashboardPage() {
       setLoading(true);
       try {
         const [dashRes, loanRes] = await Promise.all([
-          fetch(`http://localhost:8080/api/dashboard/summary?month=${selectedMonth}&year=${selectedYear}`, {
+          fetch(`https://budget-management-backend-production.up.railway.app/api/dashboard/summary?month=${selectedMonth}&year=${selectedYear}`, {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          fetch(`http://localhost:8080/api/loans`, {
+          fetch(`https://budget-management-backend-production.up.railway.app/api/loans`, {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
