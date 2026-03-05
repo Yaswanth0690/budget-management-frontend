@@ -34,7 +34,7 @@ export default function LoansPage() {
   // ================================
   async function loadLoans() {
     try {
-      const data = await apiFetch("/loans");
+      const data = await apiFetch("/api/loans");
       setLoans(data);
     } catch (error) {
       console.error("Failed to load loans:", error);
@@ -56,7 +56,7 @@ export default function LoansPage() {
     e.preventDefault();
 
     try {
-      await apiFetch("/loans", {
+      await apiFetch("/api/loans", {
         method: "POST",
         body: JSON.stringify({
           loanName,
@@ -87,7 +87,7 @@ export default function LoansPage() {
     }
 
     try {
-      await apiFetch(`/loans/${id}/repay`, {
+      await apiFetch(`/api/loans/${id}/repay`, {
         method: "PUT",
         body: JSON.stringify({
           amount: Number(amount),
@@ -108,7 +108,7 @@ export default function LoansPage() {
     if (deleteId === null) return;
 
     try {
-      await apiFetch(`/loans/${deleteId}`, {
+      await apiFetch(`/api/loans/${deleteId}`, {
         method: "DELETE",
       });
 

@@ -35,7 +35,7 @@ export default function GoalsPage() {
   // ================================
   async function loadGoals() {
     try {
-      const data = await apiFetch("/savings-goals");
+      const data = await apiFetch("/api/savings-goals");
       setGoals(data || []);
     } catch (error) {
       console.error(error);
@@ -57,7 +57,7 @@ export default function GoalsPage() {
     e.preventDefault();
 
     try {
-      await apiFetch("/savings-goals", {
+      await apiFetch("/api/savings-goals", {
         method: "POST",
         body: JSON.stringify({
           goalName: name,
@@ -84,7 +84,7 @@ export default function GoalsPage() {
     }
 
     try {
-      await apiFetch(`/savings-goals/${id}/contribute`, {
+      await apiFetch(`/api/savings-goals/${id}/contribute`, {
         method: "POST",
         body: JSON.stringify({
           amount: Number(amount),
@@ -105,7 +105,7 @@ export default function GoalsPage() {
     if (extendId === null || !newTargetAmount) return;
 
     try {
-      await apiFetch(`/savings-goals/${extendId}`, {
+      await apiFetch(`/api/savings-goals/${extendId}`, {
         method: "PUT",
         body: JSON.stringify({
           targetAmount: Number(newTargetAmount),
@@ -127,7 +127,7 @@ export default function GoalsPage() {
     if (deleteId === null) return;
 
     try {
-      await apiFetch(`/savings-goals/${deleteId}`, {
+      await apiFetch(`/api/savings-goals/${deleteId}`, {
         method: "DELETE",
       });
 
