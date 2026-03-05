@@ -25,7 +25,7 @@ export default function BudgetsPage() {
 
   async function loadBudgets() {
     try {
-      const data = await apiFetch("/budgets");
+      const data = await apiFetch("/api/budgets");
       setBudgets(data);
     } catch (error) {
       console.error("Failed to load budgets:", error);
@@ -47,7 +47,7 @@ export default function BudgetsPage() {
     const [yearPart, monthPart] = monthInput.split("-");
 
     try {
-      await apiFetch("/budgets", {
+      await apiFetch("/api/budgets", {
         method: "POST",
         body: JSON.stringify({
           amount: Number(amount),
@@ -67,7 +67,7 @@ export default function BudgetsPage() {
   async function confirmDelete() {
     if (deleteId === null) return;
     try {
-      await apiFetch(`/budgets/${deleteId}`, {
+      await apiFetch(`/api/budgets/${deleteId}`, {
         method: "DELETE",
       });
       setDeleteId(null);
