@@ -1,5 +1,5 @@
 // 🔥 Pulls the URL from Environment Variables, falling back to your local Docker container
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://140.245.250.4:8080";
 
 export async function apiFetch(
   endpoint: string,
