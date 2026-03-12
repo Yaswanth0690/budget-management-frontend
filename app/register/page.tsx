@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,12 +29,9 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // 🔥 EXACT URL FROM YOUR POSTMAN SCREENSHOT
-      const res = await fetch("https://budget-management-backend-production.up.railway.app/api/auth/register", {
+      // 🔥 Uses dynamic apiFetch. Error handling is now done automatically in api.ts
+      await apiFetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ 
           name, 
           email, 
@@ -41,24 +39,11 @@ export default function RegisterPage() {
         }),
       });
 
-      // 🔥 Handled plain text response from Spring Boot
-      if (!res.ok) {
-        let errorMessage = "Registration failed. Please try again.";
-        try {
-            const data = await res.json();
-            errorMessage = data.message || errorMessage;
-        } catch {
-            const textData = await res.text();
-            if (textData) errorMessage = textData;
-        }
-        throw new Error(errorMessage);
-      }
-
       // If registration is successful, redirect to the login page
       router.push("/login?registered=true");
       
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { apiFetch } from "@/lib/api"; // 🔥 Added apiFetch import
 
 interface CategorySummary {
   categoryName: string;
@@ -21,7 +22,7 @@ interface DashboardData {
   totalBudgets: number;
   remainingBudget: number;
   totalRemainingLoans: number;
-  totalGoals: number; // Count of completed goals
+  totalGoals: number; 
   totalCategories: number;
   totalGoalTargetAmount: number;
   totalGoalSavedAmount: number;
@@ -45,10 +46,7 @@ const MONTHS = [
 const DEFAULT_CATEGORIES = ["Food", "Bills", "Travel", "Others"];
 
 const PIE_COLORS = [
-  '#8B5CF6', // Purple
-  '#0084FF', // Blue
-  '#F59E0B', // Orange
-  '#14B8A6', // Teal
+  '#8B5CF6', '#0084FF', '#F59E0B', '#14B8A6', 
 ];
 
 export default function DashboardPage() {
@@ -56,26 +54,21 @@ export default function DashboardPage() {
   const [loans, setLoans] = useState<Loan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Selection state for independent monthly filtering
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [dashRes, loanRes] = await Promise.all([
-          fetch(`https://budget-management-backend-production.up.railway.app/api/dashboard/summary?month=${selectedMonth}&year=${selectedYear}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          fetch(`https://budget-management-backend-production.up.railway.app/api/loans`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+        // 🔥 Using apiFetch to automatically handle tokens and the Base URL
+        const [dashData, loanData] = await Promise.all([
+          apiFetch(`/api/dashboard/summary?month=${selectedMonth}&year=${selectedYear}`),
+          apiFetch(`/api/loans`)
         ]);
-        if (dashRes.ok) setData(await dashRes.json());
-        if (loanRes.ok) setLoans(await loanRes.json());
+        
+        setData(dashData);
+        setLoans(loanData);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -94,10 +87,7 @@ export default function DashboardPage() {
     ? Math.min((data.totalExpenses / data.totalBudgets) * 100, 100) 
     : 0;
 
-  // 🔥 Filter to ONLY show active goals (less than 100% complete)
   const activeGoals = data.goals?.filter(goal => goal.savedAmount < goal.targetAmount) || [];
-
-  // 🔥 Filter to ONLY show active loans (less than 100% paid)
   const activeLoans = loans?.filter(loan => loan.paidAmount < loan.totalAmount) || [];
 
   const displayCategories = DEFAULT_CATEGORIES.map(name => {

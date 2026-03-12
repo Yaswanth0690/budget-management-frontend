@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,24 +30,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://budget-management-backend-production.up.railway.app/api/auth/login", {
+      // 🔥 Uses dynamic apiFetch instead of hardcoded Railway URL
+      const data = await apiFetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        router.push("/dashboard");
-      } else {
-        setError(data.message || "Login failed. Please check your credentials.");
-      }
-    } catch (err) {
-      setError("Unable to connect to the server. Please try again later.");
+      // If successful, save token and redirect
+      localStorage.setItem("token", data.token);
+      router.push("/dashboard");
+      
+    } catch (err: any) {
+      setError(err.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -63,7 +58,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Success Message Display (e.g., after registration) */}
+        {/* Success Message Display */}
         {successMsg && (
           <div className="bg-green-50 border border-green-100 text-green-600 p-3 rounded-xl text-sm mb-6 text-center font-medium">
             {successMsg}
